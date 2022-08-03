@@ -1,9 +1,4 @@
-# dependencies
+
 /venv
-
-# testing
-
-# production
-
-# misc
+__pycache__
 .env

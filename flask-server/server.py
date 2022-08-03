@@ -10,6 +10,3 @@ class Login(Resource):
         return jsonify({'data' : data })
 
 api.add_resource(Login, '/auth')
-
-if __name__ == "__main__":
-    app.run(debug=True)
