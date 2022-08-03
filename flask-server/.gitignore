@@ -1,0 +1,9 @@
+# dependencies
+/venv
+
+# testing
+
+# production
+
+# misc
+.env
