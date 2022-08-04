@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import React, { Fragment, useState, useEffect } from 'react';
+import Login from './components/Login/Login';
+
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          This is working !!!
-          -S.P
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <Router>
+        <div className='App'>
+        <Routes>
+          <Route 
+            path="/" 
+            element={<Navigate to="/login" />}
+          />
+          <Route 
+            path="/login" 
+            element={<Login/>}
+          />
+        </Routes>
+        </div>
+      </Router>
+    </Fragment>
   );
 }
 
