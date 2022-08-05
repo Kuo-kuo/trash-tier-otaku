@@ -20,6 +20,10 @@ function App() {
             path="/login" 
             element={<Login/>}
           />
+          <Route
+            path="/sussy"
+            element={<p> 404 killme kudesai</p>}
+          />
         </Routes>
         </div>
       </Router>

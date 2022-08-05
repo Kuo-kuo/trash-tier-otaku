@@ -1,10 +1,20 @@
 import React, { useState }from 'react';
+import { useNavigate} from 'react-router-dom';
 import './Login.css';
 
 function Login() {
 
-    function clickSignIn() {
-        console.log("clicked signin")
+    let navigate = useNavigate()
+
+    async function clickSignIn(e) {
+        console.log("clicked login button")
+        try{
+            //window.location.replace("http://google.com") // change to external
+            //navigate("/sussy") // change to local url
+        }
+        catch(err){
+            console.log(err.message)
+        }
     }
 
     // Defines UI for Login component
