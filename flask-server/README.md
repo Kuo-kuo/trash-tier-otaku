@@ -12,4 +12,4 @@
 
 5. set up db.py file, requires HOST, DATABASE, DB_USER, DB_PASSWORD
 
-5. start flask app using "flask run"
+5. start flask app using **flask run**
