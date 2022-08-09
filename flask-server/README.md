@@ -1,7 +1,10 @@
+# Backend for Trash Tier Otaku Webapp
+This is the backend api for TTO. It requires Python and Postgres to run properly
+
 # How To Run Locally
 1. navigate to flask-server directory
 
-2. set up virtual environment, run the following 
+2. set up virtual environment, run the following:
 **mkdir venv**
 **python -m venv venv**
 **.\venv\Scripts\activate**
