@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Login from './components/Login/Login';
-
+import Callback from './components/Callback/Callback';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -19,6 +19,10 @@ function App() {
           <Route 
             path="/login" 
             element={<Login/>}
+          />
+          <Route 
+            path="/callback" 
+            element={<Callback/>}
           />
           <Route
             path="/sussy"
