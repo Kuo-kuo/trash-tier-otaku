@@ -1,10 +1,11 @@
-from urllib import response
+from http import client
 from flask import Flask, jsonify, request, Response
 from flask_restful import Api, Resource
 
-from dotenv import load_dotenv
-from os import getenv
+import requests
 
+from dotenv import load_dotenv
+import sys, os
 import db
 import psycopg2
 
@@ -16,8 +17,8 @@ app = Flask(__name__)
 api = Api(app)
 
 load_dotenv()
-client_id = getenv('CLIENT_ID')
-client_secret = getenv('CLIENT_SECRET')
+client_id = os.getenv('CLIENT_ID')
+client_secret = os.getenv('CLIENT_SECRET')
 
 def get_db_conn():
     conn = psycopg2.connect(
@@ -40,15 +41,19 @@ class Auth(Resource):
             conn = get_db_conn()
             cur = conn.cursor()
             
-            sql_ins = f'insert into requests(client_challenge) values (\'{client_challenge}\') returning request_id;'
+            ins_secret = f'insert into requests(client_challenge) values (\'{client_challenge}\') returning request_id;'
 
-            cur.execute(sql_ins)
+            cur.execute(ins_secret)
             conn.commit()
             request_id = cur.fetchone()[0]
             url = f'https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id={client_id}&code_challenge={client_challenge}&state={request_id}'
 
 
         except Exception as e:
+            if (conn):    
+                cur.close()
+                conn.close()
+                
             return Response(
                 response=dumps({'error message': str(e)}),
                 status=400,
@@ -65,18 +70,94 @@ class Auth(Resource):
                 mimetype='application/json'
             )
 
+
+class Callback(Resource):
     def post(self):
-        #store the user's auth key with a access token, maybe also pull user's account info to protect from api limit?
-        return Response("unfinished", status=501)
+        try:
+            data = request.get_json()
+            assert data, "didn't pass in params in body"
+            assert "auth_code" in data.keys(), "didn't pass user auth code in body"
+            assert "request_id" in data.keys(), "didn't pass request id in body"
+            auth_code = data["auth_code"]
+            request_id = data["request_id"]
+            
+            conn = get_db_conn()
+            cur = conn.cursor()
 
-class Hello(Resource):
-    def get(self):
-        data = 'Hello World'
+            check_code = f'select case when exists (select * from users where auth_code = \'{auth_code}\') then TRUE else FALSE end'
+            cur.execute(check_code)
+            code_exists = cur.fetchone()[0]
+            if not code_exists:
+                get_secret = f'select client_challenge from requests where request_id = \'{request_id}\''
+                cur.execute(get_secret)
+                code_verifier = cur.fetchone()[0]
 
-        return {'data' : data }
+                data = {
+                    'client_id': client_id,
+                    'client_secret': client_secret,
+                    'code': auth_code,
+                    'code_verifier': code_verifier,
+                    'grant_type': 'authorization_code'
+                }
+                response = requests.post("https://myanimelist.net/v1/oauth2/token", data=data)
+
+                response.raise_for_status()
+                token = response.json()
+                
+                access_token = token["access_token"]
+                refresh_token = token["refresh_token"]
+                access_token_expiration = token["expires_in"]
+                
+                insert_token = f'insert into users(auth_code, access_token, refresh_token, access_token_expiration) values (\'{auth_code}\', \'{access_token}\', \'{refresh_token}\', (CURRENT_TIMESTAMP + interval \'{access_token_expiration} seconds\'))'
+                print("inserting token")
+                cur.execute(insert_token)
+                conn.commit()
+                print("token inserted")
+            else:
+                grab_token = f'select access_token from users where auth_code = \'{auth_code}\''
+                cur.execute(grab_token)
+                access_token = cur.fetchone()[0]
+
+            delete_request = f'delete from requests where request_id = \'{request_id}\''
+            cur.execute(delete_request)
+            conn.commit()
+            if (conn):    
+                cur.close()
+                conn.close()
+
+            return Response(
+                response=dumps({'access_token': access_token}),
+                status=201,
+                mimetype='application/json'
+            )    
+        except AssertionError as a:
+            print(a)
+            if (conn):    
+                cur.close()
+                conn.close()
+                
+            return Response(
+                response=dumps({'error message': str(e)}),
+                status=400,
+                mimetype='application/json'
+            )
+
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            if (conn):    
+                cur.close()
+                conn.close()
+                
+            return Response(
+                response=dumps({'error message': str(e)}),
+                status=400,
+                mimetype='application/json'
+            )
 
 api.add_resource(Auth, '/auth')
-api.add_resource(Hello, '/')
+api.add_resource(Callback, '/callback')
 
 if __name__ == '__main__':
     app.run(debug=True)

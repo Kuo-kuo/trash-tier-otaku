@@ -16,13 +16,14 @@ cur.execute('create extension if not exists \"uuid-ossp\";')
 cur.execute('create table if not exists requests('
         'request_id uuid UNIQUE DEFAULT uuid_generate_v4() ,'
         'client_challenge char(128) UNIQUE NOT NULL ,'
+        'request_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP'
         'primary key(request_id)'
     ');'
 )
 
 cur.execute('create table if not exists users('
         'user_id uuid DEFAULT uuid_generate_v4(),'
-        'auth_code VARCHAR(1024) NOT NULL,'
+        'auth_code VARCHAR(1024) NOT NULL UNIQUE,'
         'access_token VARCHAR(1024) NOT NULL,'
         'refresh_token VARCHAR(1024) NOT NULL,'
         'access_token_expiration TIMESTAMP NOT NULL,'

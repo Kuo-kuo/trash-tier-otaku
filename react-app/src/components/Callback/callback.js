@@ -1,52 +1,53 @@
-import React, { useState }from 'react';
-import { useNavigate} from 'react-router-dom';
-import './Login.css';
+import React, { useState, useEffect }from 'react';
+import { useNavigate, useSearchParams} from 'react-router-dom';
+import './Callback.css';
 
-function Login() {
-
+function Callback() {
+    let [searchParams, setSearchParams] = useSearchParams()
+    
     let navigate = useNavigate()
+    
+    useEffect(() => {
+        const auth_code = searchParams.get("code")
+        const request_id = searchParams.get("state")
 
-    async function clickSignIn(e) {
-        console.log("clicked login button")
+        async function fetchData() {
+            const body = { auth_code, request_id };
+
+            const response = await fetch("/callback",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                }
+            );
+            const parseResponse = await response.json();
+            console.log(parseResponse)
+        }
+        
         try{
-            if (true){ // change later
-                const response = await fetch("/auth", 
-                    {
-                        method: "GET"
-                    }
-                )
-                
-                const parseResponse = await response.json()
-                console.log(parseResponse)
-                window.location.replace(parseResponse.redirect) 
-            }
-            else {
-                navigate("/sussy")
-            }
+            fetchData()
+            // window.location.replace("/sussy")// fix this shit l8r
         }
         catch(err){
             console.log(err.message)
         }
-        
-    }
+    });
 
+    async function clickRedirect(e) {
+        console.log("redirected lol jk") // fix this shit l8r noob
+    }
     // Defines UI for Login component
     return (
-        <div className="login-container">
-
-            <div className="left-section">
-                <div className="large-title">Trash Tier Otaku</div>
-                <div className="small-title">Rate Your Anime Taste</div>
+        <div className="callback-container">
+            <div className="large-title">Login Successfull!</div>
+            <div className="small-title">Please wait while redirecting... </div>
+            <div className='small-title'>Didn't get redirected?</div>
+            <div className='redir'>
+                <button className="button" onClick={clickRedirect}>Click Here!</button>
             </div>
-
-            <div className="right-section">
-                <div className='mal-login'>
-                    <button className="button" onClick={clickSignIn}>Sign in to MAL</button>
-                </div>
-            </div>
-
         </div>
     );
 }
 
-export default Login;
+export default Callback;
