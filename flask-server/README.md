@@ -5,8 +5,11 @@ This is the backend api for TTO. It requires Python and Postgres to run properly
 1. navigate to flask-server directory
 
 2. set up virtual environment, run the following:
-**mkdir venv**,
-**python -m venv venv**,
+
+**mkdir venv**
+
+**python -m venv venv**
+
 **.\venv\Scripts\activate**
 
 3. install dependencies using **pip install -r requirements.txt**
@@ -15,4 +18,4 @@ This is the backend api for TTO. It requires Python and Postgres to run properly
 
 5. set up db.py file, requires HOST, DATABASE, DB_USER, DB_PASSWORD
 
-5. start flask app using **flask run**
+6. start flask app using **flask run**
