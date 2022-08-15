@@ -1,4 +1,3 @@
-
 import os
 import db
 import psycopg2
@@ -11,9 +10,11 @@ conn = psycopg2.connect(
 )
 
 cur = conn.cursor()
+# db extensions/libs
 cur.execute('create extension if not exists \"uuid-ossp\";')
 conn.commit()
 
+# request table, stores request+secret pairs
 cur.execute('create table if not exists requests('
         'request_id uuid UNIQUE DEFAULT uuid_generate_v4() ,'
         'client_challenge char(128) UNIQUE NOT NULL ,'
@@ -23,6 +24,7 @@ cur.execute('create table if not exists requests('
 )
 conn.commit()
 
+# user table, stores client tokens and auth code
 cur.execute('create table if not exists users('
         'user_id uuid DEFAULT uuid_generate_v4(),'
         'auth_code VARCHAR(1024) NOT NULL UNIQUE,'

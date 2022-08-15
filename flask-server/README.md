@@ -2,7 +2,7 @@
 This is the backend api for TTO. It requires Python and Postgres to run properly
 
 # How To Run Locally
-1. navigate to flask-server directory
+1. Set up the PSQL server, then navigate to flask-server directory
 
 2. set up virtual environment, run the following:
 
@@ -25,3 +25,4 @@ This is the backend api for TTO. It requires Python and Postgres to run properly
 2. Create a database with **CREATE DATABASE (database_name);**
 3. Create a user to write and store data for backend with **CREATE USER (db_user) WITH PASSWORD (password);**
 4. Grant user rights to the database with **GRANT ALL PRIVILEGES ON (database_name) TO (db_user);**
+5. Exit the PSQL terminal and run the python script using **python init_db.py**
