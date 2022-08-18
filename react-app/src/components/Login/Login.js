@@ -1,15 +1,15 @@
-import React, { useState }from 'react';
+import React from 'react';
 import { useNavigate} from 'react-router-dom';
-import './Login.css';
+import './login.css';
 
-function Login() {
+function Login({user_id, setID}) {
 
     let navigate = useNavigate()
 
     async function clickSignIn(e) {
         console.log("clicked login button")
         try{
-            if (true){ // change later
+            if (user_id){ // change later
                 const response = await fetch("/auth", 
                     {
                         method: "GET"
@@ -21,7 +21,7 @@ function Login() {
                 window.location.replace(parseResponse.redirect) 
             }
             else {
-                navigate("/sussy")
+                navigate("/rater")
             }
         }
         catch(err){

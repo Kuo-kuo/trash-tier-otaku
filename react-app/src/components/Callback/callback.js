@@ -1,8 +1,8 @@
-import React, { useState, useEffect }from 'react';
+import React, {useEffect }from 'react';
 import { useNavigate, useSearchParams} from 'react-router-dom';
-import './Callback.css';
+import './callback.css';
 
-function Callback() {
+function Callback({user_id, setID}) {
     let [searchParams, setSearchParams] = useSearchParams()
     
     let navigate = useNavigate()
@@ -22,12 +22,12 @@ function Callback() {
                 }
             );
             const parseResponse = await response.json();
-            console.log(parseResponse)
+            setID(parseResponse.user_id)
+            // navigate("/rater")
         }
         
         try{
             fetchData()
-            // window.location.replace("/sussy")// fix this shit l8r
         }
         catch(err){
             console.log(err.message)
@@ -35,7 +35,7 @@ function Callback() {
     });
 
     async function clickRedirect(e) {
-        console.log("redirected lol jk") // fix this shit l8r noob
+        navigate("/rater")
     }
     // Defines UI for Login component
     return (

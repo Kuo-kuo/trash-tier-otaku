@@ -143,8 +143,13 @@ class Callback(Resource):
                 mimetype='application/json'
             )
 
+class Rater(Resource):
+    def get(): return
+
+    
 api.add_resource(Auth, '/auth')
 api.add_resource(Callback, '/callback')
+api.add_resource(Rater, '/rater')
 
 if __name__ == '__main__':
     app.run(debug=True)
