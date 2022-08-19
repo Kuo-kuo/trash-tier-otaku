@@ -82,42 +82,36 @@ class Callback(Resource):
             conn = get_db_conn()
             cur = conn.cursor()
 
-            check_code = f'select case when exists (select * from users where auth_code = \'{auth_code}\') then TRUE else FALSE end'
-            cur.execute(check_code)
-            code_exists = cur.fetchone()[0]
-            if not code_exists:
-                get_secret = f'select client_challenge from requests where request_id = \'{request_id}\''
-                cur.execute(get_secret)
-                code_verifier = cur.fetchone()[0]
+            get_secret = f'select client_challenge from requests where request_id = \'{request_id}\''
+            cur.execute(get_secret)
+            code_verifier = cur.fetchone()[0]
 
-                data = {
-                    'client_id': client_id,
-                    'client_secret': client_secret,
-                    'code': auth_code,
-                    'code_verifier': code_verifier,
-                    'grant_type': 'authorization_code'
-                }
-                response = requests.post("https://myanimelist.net/v1/oauth2/token", data=data)
+            data = {
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'code': auth_code,
+                'code_verifier': code_verifier,
+                'grant_type': 'authorization_code'
+            }
+            response = requests.post("https://myanimelist.net/v1/oauth2/token", data=data)
 
-                response.raise_for_status()
-                token = response.json()
-                
-                access_token = token["access_token"]
-                refresh_token = token["refresh_token"]
-                access_token_expiration = token["expires_in"]
-                
-                insert_token = f'insert into users(auth_code, access_token, refresh_token, access_token_expiration) values (\'{auth_code}\', \'{access_token}\', \'{refresh_token}\', (CURRENT_TIMESTAMP + interval \'{access_token_expiration} seconds\')) returning user_id'
-                print("inserting token")
-                cur.execute(insert_token)
-                conn.commit()
-                print("token inserted")
-                user_id = cur.fetchone()[0]
-            else:
-                grab_id = f'select user_id from users where auth_code = \'{auth_code}\''
-                cur.execute(grab_id)
-                user_id = cur.fetchone()[0]
+            response.raise_for_status()
+            token = response.json()
+            
+            access_token = token["access_token"]
+            refresh_token = token["refresh_token"]
+            access_token_expiration = token["expires_in"]
+            
+            # if user new, insert, if old update
+            
+
+            insert_token = f'insert into users(auth_code, access_token, refresh_token, access_token_expiration) values (\'{auth_code}\', \'{access_token}\', \'{refresh_token}\', (CURRENT_TIMESTAMP + interval \'{access_token_expiration} seconds\')) returning user_id'
+            cur.execute(insert_token)
+            conn.commit()
+            user_id = cur.fetchone()[0]
 
             delete_request = f'delete from requests where request_id = \'{request_id}\''
+
             cur.execute(delete_request)
             conn.commit()
             if (conn):    

@@ -15,7 +15,7 @@ function CallbackPage() {
         const auth_code = searchParams.get("code")
         const request_id = searchParams.get("state")
 
-        async function fetchData() {
+        async function fetchUserID() {
             const body = { auth_code, request_id };
 
             const response = await fetch("/callback",
@@ -32,7 +32,7 @@ function CallbackPage() {
         }
         
         try{
-            fetchData()
+            fetchUserID()
         }
         catch(err){
             console.log(err.message)
