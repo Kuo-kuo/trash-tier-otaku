@@ -2,14 +2,14 @@ import React from 'react';
 import { useNavigate} from 'react-router-dom';
 import './login.css';
 
-function Login({user_id, setID}) {
+function LoginPage() {
 
     let navigate = useNavigate()
 
     async function clickSignIn(e) {
         console.log("clicked login button")
         try{
-            if (user_id){ // change later
+            if (true){ // change later
                 const response = await fetch("/auth", 
                     {
                         method: "GET"
@@ -21,7 +21,7 @@ function Login({user_id, setID}) {
                 window.location.replace(parseResponse.redirect) 
             }
             else {
-                navigate("/rater")
+                navigate("/dashboard")
             }
         }
         catch(err){
@@ -41,7 +41,7 @@ function Login({user_id, setID}) {
 
             <div className="right-section">
                 <div className='mal-login'>
-                    <button className="button" onClick={clickSignIn}>Sign in to MAL</button>
+                    <button className="button" onClick={clickSignIn}>Sign in using MAL</button>
                 </div>
             </div>
 
@@ -49,4 +49,4 @@ function Login({user_id, setID}) {
     );
 }
 
-export default Login;
+export default LoginPage;

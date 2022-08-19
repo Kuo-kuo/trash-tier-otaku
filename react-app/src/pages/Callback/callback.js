@@ -1,12 +1,16 @@
 import React, {useEffect }from 'react';
 import { useNavigate, useSearchParams} from 'react-router-dom';
+import { useAuth } from "../../hooks/useAuth";
+
 import './callback.css';
 
-function Callback({user_id, setID}) {
+function CallbackPage() {
     let [searchParams, setSearchParams] = useSearchParams()
     
     let navigate = useNavigate()
     
+    const { login } = useAuth();
+
     useEffect(() => {
         const auth_code = searchParams.get("code")
         const request_id = searchParams.get("state")
@@ -22,8 +26,9 @@ function Callback({user_id, setID}) {
                 }
             );
             const parseResponse = await response.json();
-            setID(parseResponse.user_id)
-            // navigate("/rater")
+            login({
+                'user_id': parseResponse.user_id
+            });
         }
         
         try{
@@ -35,7 +40,7 @@ function Callback({user_id, setID}) {
     });
 
     async function clickRedirect(e) {
-        navigate("/rater")
+        navigate("/dashboard")
     }
     // Defines UI for Login component
     return (
@@ -50,4 +55,4 @@ function Callback({user_id, setID}) {
     );
 }
 
-export default Callback;
+export default CallbackPage;

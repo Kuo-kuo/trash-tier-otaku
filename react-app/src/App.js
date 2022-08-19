@@ -1,54 +1,36 @@
-import React, { Fragment, useState } from 'react';
-import Login from './components/Login/login';
-import Callback from './components/Callback/callback';
-import Rater from './components/Rater/rater';
+import React from 'react';
+import { Routes, Route } from "react-router-dom";
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HomeLayout } from "./components/HomeLayout";
+import { ProtectedLayout } from "./components/ProtectedLayout";
+
+import  HomePage from "./pages/Home/home";
+import LoginPage from "./pages/Login/login";
+import CallbackPage from "./pages/Callback/callback";
+import ProfilePage from "./pages/Profile/profile";
+// import RaterPage from "./pages/Rater/rater";
 
 import './App.css';
 
 function App() {
-
-  const [user_id, setID] = useState()
-
   return (
-    <Fragment>
-      <Router>
-        <div className='App'>
-        <Routes>
-          <Route 
-            path="/" 
-            element={<Navigate to="/login" />}
-          />
-          <Route 
-            path="/login" 
-            element={<Login
-                      user_id={user_id} 
-                      setID={setID}
-                    />}
-          />
-          <Route 
-            path="/callback" 
-            element={<Callback 
-                        user_id={user_id} 
-                        setID={setID}
-                    />}
-          />
-          <Route
-            path="/sussy"
-            element={<p> 404 killme kudesai</p>}
-          />
-          <Route
-            path="/rater"
-            element={<Rater 
-                      user_id={user_id} 
-                      setID={setID}
-                    />}
-          />
-        </Routes>
-        </div>
-      </Router>
-    </Fragment>
+    <div className='App'>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        
+        <Route element={<HomeLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/callback" element={<CallbackPage />} />
+        </Route>
+
+        <Route path="/dashboard" element={<ProtectedLayout />}>
+          <Route path="profile" element={<ProfilePage />} />
+          {/* <Route path="rater" element={<RaterPage />} /> */}
+        </Route>
+
+        <Route path="*" element={<p> 404 killme kudesai</p>} />
+      </Routes>
+    </div>
   );
 }
 
